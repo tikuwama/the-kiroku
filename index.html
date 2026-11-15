@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#075b58">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="THE 記録">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<title>THE 記録</title>
+<style>
+:root{--green:#075b58;--green2:#0b716b;--gold:#c6a35b;--cream:#f7f4ec;--ink:#263331;--muted:#77817e;--line:#e6e4dc;--paper:#fffefa}
+*{box-sizing:border-box}body{margin:0;background:var(--cream);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif}
+header{background:linear-gradient(135deg,#064d4b,#08706a);color:#fff;padding:calc(18px + env(safe-area-inset-top)) 20px 22px;border-bottom:3px solid var(--gold)}
+.brand{font-family:Georgia,serif;font-size:28px;letter-spacing:.06em;font-weight:600}.brand span{font-family:serif;letter-spacing:.04em}.sub{font-size:11px;opacity:.78;margin-top:4px;letter-spacing:.12em}
+main{max-width:680px;margin:0 auto;padding:18px 16px 42px}.today{font-size:13px;color:var(--muted);margin:2px 2px 15px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.genre{border:1px solid #e4e0d4;background:var(--paper);border-radius:17px;padding:18px 15px;text-align:left;min-height:112px;box-shadow:0 3px 12px #173c3410;color:var(--ink)}
+.genre:active,.btn:active{transform:scale(.985)}.emoji{font-size:25px;display:block;margin-bottom:9px}.genre b{font-size:16px}.genre small{display:block;color:var(--muted);margin-top:5px;font-size:11px}
+.section{margin-top:23px}.section-head{display:flex;align-items:center;justify-content:space-between;font-weight:700;margin:0 2px 10px}
+.btn{border:0;border-radius:12px;padding:12px 15px;background:var(--green);color:white;font-weight:650;font-size:14px;cursor:pointer}.btn.secondary{background:#e8eee9;color:var(--green)}.btn.ghost{background:transparent;color:var(--green);border:1px solid #cbd8d1}.btn.danger{background:#f7e9e5;color:#9a3e2d}.btn.small{padding:8px 11px;font-size:12px}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:15px;box-shadow:0 3px 12px #173c3408}
+.row{display:flex;gap:9px;align-items:center}.row>*{min-width:0}.grow{flex:1}
+input,textarea,select{width:100%;border:1px solid #deded5;border-radius:11px;background:#fff;padding:12px;font:inherit;color:var(--ink);font-size:15px;outline-color:var(--green2)}
+textarea{min-height:180px;resize:vertical;line-height:1.65}label{display:block;font-size:12px;font-weight:700;color:#5e6b66;margin:14px 0 7px}
+.form-actions{display:flex;gap:9px;margin-top:18px}.form-actions button{flex:1}
+.back{border:0;background:transparent;color:var(--green);font-weight:700;padding:5px 0 14px;font-size:14px}
+.entry{display:flex;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line);cursor:pointer}.entry:last-child{border:0}.entry-icon{width:40px;height:40px;border-radius:12px;background:#edf2eb;display:grid;place-items:center;font-size:20px;flex:none}.entry-title{font-weight:700;font-size:14px;overflow-wrap:anywhere}.entry-meta{font-size:11px;color:var(--muted);margin:4px 0}.entry-note{font-size:12px;color:#59635f;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}
+.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}.toolbar>*{flex:1}
+.search{margin:12px 0}.muted{color:var(--muted);font-size:12px}.hidden{display:none!important}.empty{text-align:center;color:var(--muted);padding:28px 10px;font-size:13px}
+.detail-title{font-size:21px;font-weight:750;margin:4px 0 8px;overflow-wrap:anywhere}.detail-note{white-space:pre-wrap;line-height:1.8;overflow-wrap:anywhere;min-height:70px}
+footer{text-align:center;color:#9aa29e;font-size:10px;padding:15px}
+@media(min-width:560px){main{padding-top:24px}.grid{gap:15px}.genre{min-height:125px;padding:22px}}
+</style>
+</head>
+<body>
+<header><div class="brand">THE <span>記録</span></div><div class="sub">MY PERSONAL JOURNAL</div></header>
+<main>
+<section id="home">
+ <div class="today" id="today"></div>
+ <div class="grid">
+  <button class="genre" data-new="読書"><span class="emoji">📚</span><b>読書</b><small>本の記録</small></button>
+  <button class="genre" data-new="映画"><span class="emoji">🎬</span><b>映画</b><small>映画の記録</small></button>
+  <button class="genre" data-new="ドラマ"><span class="emoji">📺</span><b>ドラマ</b><small>ドラマの記録</small></button>
+  <button class="genre" data-new="アニメ"><span class="emoji">✨</span><b>アニメ</b><small>アニメの記録</small></button>
+ </div>
+ <div class="section">
+  <div class="section-head"><span>記録を振り返る</span><button class="btn small secondary" id="allBtn">すべて見る</button></div>
+  <div class="panel" id="recent"></div>
+ </div>
+ <div class="section">
+  <div class="section-head">データの管理</div>
+  <div class="panel">
+   <div class="toolbar"><button class="btn secondary" id="jsonOut">JSONバックアップ</button><button class="btn secondary" id="csvOut">CSVを書き出す</button></div>
+   <div class="toolbar"><button class="btn ghost" id="jsonInBtn">JSONから復元</button><button class="btn ghost" id="csvInBtn">CSVを取り込む</button></div>
+   <div class="muted">記録はこのブラウザ内に保存されます。定期的にバックアップしてください。</div>
+   <input class="hidden" type="file" id="jsonFile" accept=".json,application/json">
+   <input class="hidden" type="file" id="csvFile" accept=".csv,text/csv">
+  </div>
+ </div>
+</section>
+<section id="editor" class="hidden">
+ <button class="back" id="editorBack">‹ ホームに戻る</button>
+ <div class="panel">
+  <div class="section-head"><span id="editorHeading">新しい記録</span><span class="muted">THE 記録</span></div>
+  <label for="category">ジャンル</label><select id="category"><option>読書</option><option>映画</option><option>ドラマ</option><option>アニメ</option></select>
+  <label for="date">記録日</label><input type="date" id="date">
+  <label for="title">タイトル</label><input id="title" maxlength="160" placeholder="作品名・書籍名">
+  <label for="memo">感想・メモ</label><textarea id="memo" placeholder="心に残ったこと、感じたことを自由に記録..."></textarea>
+  <div class="form-actions"><button class="btn secondary" id="cancelEdit">戻る</button><button class="btn" id="save">保存する</button></div>
+ </div>
+</section>
+<section id="list" class="hidden">
+ <button class="back" id="listBack">‹ ホームに戻る</button>
+ <div class="section-head"><span>すべての記録</span><span class="muted" id="count"></span></div>
+ <input class="search" id="search" placeholder="タイトル・感想から検索">
+ <div class="toolbar"><select id="filter"><option value="">すべてのジャンル</option><option>読書</option><option>映画</option><option>ドラマ</option><option>アニメ</option></select><select id="sort"><option value="new">日付の新しい順</option><option value="old">日付の古い順</option></select></div>
+ <div class="panel" id="entries"></div>
+</section>
+<section id="detail" class="hidden">
+ <button class="back" id="detailBack">‹ 一覧に戻る</button>
+ <div class="panel">
+  <div class="muted" id="detailMeta"></div><div class="detail-title" id="detailTitle"></div>
+  <div class="detail-note" id="detailMemo"></div>
+  <div class="form-actions"><button class="btn secondary" id="editEntry">編集する</button><button class="btn danger" id="deleteEntry">削除</button></div>
+ </div>
+</section>
+<footer>THE 記録 · あなたの時間を、あなたの言葉で。</footer>
+</main>
+<script>
+const KEY='the-kiroku-records-v1';
+const icons={読書:'📚',映画:'🎬',ドラマ:'📺',アニメ:'✨'};
+let records=[], editingId=null, currentId=null, previousView='list';
+const $=id=>document.getElementById(id);
+const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`};
+const fmt=s=>{if(!s)return '';const [y,m,d]=s.split('-').map(Number);return `${y}年${m}月${d}日`};
+function load(){try{records=JSON.parse(localStorage.getItem(KEY)||'[]');if(!Array.isArray(records))records=[]}catch{records=[]}}
+function persist(){localStorage.setItem(KEY,JSON.stringify(records));renderRecent()}
+function show(id){['home','editor','list','detail'].forEach(x=>$(x).classList.toggle('hidden',x!==id));window.scrollTo(0,0)}
+function safe(t){return String(t??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function card(r){return `<div class="entry" data-id="${safe(r.id)}"><div class="entry-icon">${icons[r.category]||'📝'}</div><div class="grow"><div class="entry-title">${safe(r.title||'（タイトルなし）')}</div><div class="entry-meta">${fmt(r.date)} · ${safe(r.category)}</div><div class="entry-note">${safe((r.memo||'').slice(0,100))}</div></div></div>`}
+function renderRecent(){const a=[...records].sort((x,y)=>y.date.localeCompare(x.date)||y.updatedAt-x.updatedAt).slice(0,3);$('recent').innerHTML=a.length?a.map(card).join(''):'<div class="empty">まだ記録はありません。ジャンルを選んで最初の記録を書いてみましょう。</div>';bindCards($('recent'))}
+function bindCards(root){root.querySelectorAll('[data-id]').forEach(el=>el.addEventListener('click',()=>openDetail(el.dataset.id)))}
+function startNew(category){editingId=null;$('editorHeading').textContent='新しい記録';$('category').value=category;$('date').value=today();$('title').value='';$('memo').value='';show('editor');$('title').focus()}
+function startEdit(r){editingId=r.id;$('editorHeading').textContent='記録を編集';$('category').value=r.category;$('date').value=r.date;$('title').value=r.title;$('memo').value=r.memo||'';show('editor')}
+function save(){const title=$('title').value.trim();if(!title){alert('タイトルを入力してください。');$('title').focus();return}const date=$('date').value;if(!date){alert('記録日を選択してください。');return}const now=Date.now();if(editingId){const i=records.findIndex(r=>r.id===editingId);if(i>=0)records[i]={...records[i],category:$('category').value,date,title,memo:$('memo').value,updatedAt:now}}else records.push({id:crypto.randomUUID?crypto.randomUUID():String(now)+Math.random(),category:$('category').value,date,title,memo:$('memo').value,createdAt:now,updatedAt:now});persist();show('home')}
+function openList(){renderList();show('list')}
+function renderList(){const q=$('search').value.trim().toLowerCase(),f=$('filter').value,dir=$('sort').value;let a=records.filter(r=>(!f||r.category===f)&&(!q||`${r.title} ${r.memo} ${r.category}`.toLowerCase().includes(q)));a.sort((x,y)=>dir==='new'?y.date.localeCompare(x.date):x.date.localeCompare(y.date));$('count').textContent=`${a.length}件`;$('entries').innerHTML=a.length?a.map(card).join(''):'<div class="empty">該当する記録はありません。</div>';bindCards($('entries'))}
+function openDetail(id){const r=records.find(x=>x.id===id);if(!r)return;currentId=id;previousView='list';$('detailMeta').textContent=`${fmt(r.date)} · ${r.category}`;$('detailTitle').textContent=r.title;$('detailMemo').textContent=r.memo||'感想・メモはありません。';show('detail')}
+function backFromDetail(){show(previousView)}
+$('today').textContent=new Intl.DateTimeFormat('ja-JP',{year:'numeric',month:'long',day:'numeric',weekday:'long'}).format(new Date());
+document.querySelectorAll('[data-new]').forEach(b=>b.addEventListener('click',()=>startNew(b.dataset.new)));
+$('allBtn').onclick=openList;$('editorBack').onclick=()=>show('home');$('cancelEdit').onclick=()=>show('home');$('save').onclick=save;$('listBack').onclick=()=>show('home');$('detailBack').onclick=backFromDetail;
+$('search').addEventListener('input',renderList);$('filter').onchange=renderList;$('sort').onchange=renderList;
+$('editEntry').onclick=()=>{const r=records.find(x=>x.id===currentId);if(r)startEdit(r)};
+$('deleteEntry').onclick=()=>{if(confirm('この記録を削除しますか？')){records=records.filter(r=>r.id!==currentId);persist();openList()}};
+function download(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000)}
+$('jsonOut').onclick=()=>download(`THE記録_backup_${today()}.json`,JSON.stringify({app:'THE 記録',version:1,records},null,2),'application/json');
+const csvCell=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+$('csvOut').onclick=()=>{const rows=[['date','category','title','memo'],...records.map(r=>[r.date,r.category,r.title,r.memo])];download(`THE記録_${today()}.csv`,'\uFEFF'+rows.map(row=>row.map(csvCell).join(',')).join('\r\n'),'text/csv;charset=utf-8')};
+$('jsonInBtn').onclick=()=>$('jsonFile').click();$('csvInBtn').onclick=()=>$('csvFile').click();
+$('jsonFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const data=JSON.parse(await f.text());const arr=Array.isArray(data)?data:data.records;if(!Array.isArray(arr))throw Error();if(!confirm(`バックアップ内の${arr.length}件を現在の記録に追加しますか？`))return;const ids=new Set(records.map(r=>r.id));arr.forEach(r=>{if(r&&r.date&&r.category&&r.title){if(!ids.has(r.id)){records.push({...r,id:r.id||String(Date.now()+Math.random())});ids.add(r.id)}}});persist();alert('復元しました。')}catch{alert('JSONファイルを読み込めませんでした。')}finally{e.target.value=''}};
+function parseCSV(s){let rows=[],row=[],v='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(q){if(c==='"'&&s[i+1]==='"'){v+='"';i++}else if(c==='"')q=false;else v+=c}else if(c==='"')q=true;else if(c===','){row.push(v);v=''}else if(c==='\n'){row.push(v.replace(/\r$/,''));rows.push(row);row=[];v=''}else v+=c}if(v.length||row.length){row.push(v.replace(/\r$/,''));rows.push(row)}return rows}
+$('csvFile').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const rows=parseCSV((await f.text()).replace(/^\uFEFF/,''));const h=rows.shift().map(x=>x.trim().toLowerCase());const ix=['date','category','title','memo'].map(k=>h.indexOf(k));if(ix.some(x=>x<0))throw Error();let n=0;rows.forEach(row=>{const date=row[ix[0]],category=row[ix[1]],title=row[ix[2]];if(date&&['読書','映画','ドラマ','アニメ'].includes(category)&&title){records.push({id:String(Date.now())+Math.random(),date,category,title,memo:row[ix[3]]||'',createdAt:Date.now(),updatedAt:Date.now()});n++}});persist();alert(`${n}件を取り込みました。`)}catch{alert('CSVを読み込めませんでした。書き出したTHE 記録のCSVを使用してください。')}finally{e.target.value=''}};
+load();renderRecent();
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));
+</script>
+</body></html>
